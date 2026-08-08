@@ -1,0 +1,33 @@
+{
+  "Comment": "Exemplo de Política AWS Route53 para Roteamento Ativo-Ativo com base em peso (Weighted)",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "api.meuapp.com",
+        "Type": "A",
+        "SetIdentifier": "Nuvem-AWS",
+        "Weight": 50,
+        "AliasTarget": {
+          "HostedZoneId": "Z2FDTNDATAQYW2",
+          "DNSName": "aws-lb.meuapp.com",
+          "EvaluateTargetHealth": true
+        }
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "api.meuapp.com",
+        "Type": "A",
+        "SetIdentifier": "Nuvem-GCP",
+        "Weight": 50,
+        "AliasTarget": {
+          "HostedZoneId": "Z35SXDOTRQ7X7K",
+          "DNSName": "gcp-lb.meuapp.com",
+          "EvaluateTargetHealth": true
+        }
+      }
+    }
+  ]
+}
