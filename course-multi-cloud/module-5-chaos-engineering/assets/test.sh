@@ -1,12 +1,22 @@
 #!/bin/bash
+set -e
 
-echo "Running tests for Module 5: Chaos Engineering..."
+echo "Starting PoC for Module 5 (Chaos Engineering)..."
 
-echo "Injecting network delay..."
-echo "Mock tc qdisc delay simulation: OK"
-echo "Validating cascading failures..."
-echo "Mock routing redirect: OK"
-echo "Reverting network delay..."
-echo "Mock tc qdisc remove: OK"
-echo "Module 5 tests passed successfully!"
-exit 0
+echo "Injecting network delay (Mock)..."
+sleep 1
+echo "Success: Mock tc qdisc delay simulation (500ms latency injected)"
+
+echo "Validating cascading failures (Mock)..."
+sleep 1
+echo "Success: Mock routing redirect (Health check failed, Route53 cut AWS)"
+
+echo "Simulating Blackhole / Iptables DROP (Mock)..."
+sleep 1
+echo "Success: Mock iptables DROP applied. System surviving via GCP/Azure quorum."
+
+echo "Reverting chaos injection (Mock)..."
+sleep 1
+echo "Success: Mock tc qdisc and iptables rules removed. AWS node rejoining cluster."
+
+echo "Module 5 test completed successfully."
