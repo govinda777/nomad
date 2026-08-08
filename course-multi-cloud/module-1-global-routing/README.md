@@ -7,6 +7,34 @@ Se sua aplicação está hospedada inteiramente na AWS (usando ELB, EC2, RDS) e 
 
 No modelo **Ativo-Ativo**, a aplicação já está rodando em duas (ou mais) nuvens simultaneamente. O desafio passa a ser: *Como dividimos o tráfego entre elas e como o sistema percebe que uma nuvem caiu para parar de enviar usuários para lá?*
 
+## Mapa de Arquitetura
+
+```mermaid
+graph TD
+    User((Usuário Final))
+    Edge[Borda Global <br/> Anycast DNS]
+
+    subgraph Nuvem AWS
+        LB_AWS[Load Balancer AWS]
+        App_AWS[Aplicação]
+        LB_AWS --> App_AWS
+    end
+
+    subgraph Nuvem GCP
+        LB_GCP[Load Balancer GCP]
+        App_GCP[Aplicação]
+        LB_GCP --> App_GCP
+    end
+
+    User -->|Acessa api.meuapp.com| Edge
+    Edge -- Rota Principal <br/> (Menor Latência) --> LB_AWS
+    Edge -. Rota Secundária <br/> (Se AWS falhar) .-> LB_GCP
+
+    style Edge fill:#f9f,stroke:#333,stroke-width:2px
+    style LB_AWS fill:#ff9900,stroke:#333
+    style LB_GCP fill:#4285f4,stroke:#333
+```
+
 ## Conceitos Chave
 1.  **DNS Global & Anycast**: Diferente de um DNS normal que retorna um único IP, roteadores globais podem retornar IPs diferentes baseados na localização física de quem pergunta (GeoDNS) ou da latência de rede (Latency-Based Routing).
 2.  **Global Health Checks**: A provedora de DNS (ex: Cloudflare, AWS Route53) testa constantemente as pontas (seus Load Balancers na AWS e no GCP). Se a AWS parar de responder com HTTP 200, a borda remove a AWS do pool do DNS e joga 100% do tráfego para o GCP, instantaneamente.

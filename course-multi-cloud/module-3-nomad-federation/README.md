@@ -92,4 +92,31 @@ Como não podemos garantir menos de 10ms entre AWS e GCP, **não podemos colocar
 2. Criamos outro cluster isolado (Servers + Clients) no GCP.
 3. Federamos ambos. Assim, a comunicação administrativa via RPC é permitida, e usamos a diretiva `multiregion` nos jobs (Enterprise) para despachar aplicações globais, mantendo rollbacks (`auto_revert`) isolados caso uma das nuvens sofra falhas durante a atualização!
 
+### Mapa de Arquitetura (Federação Nomad)
+
+```mermaid
+graph TD
+    User([Operador DevOps])
+
+    subgraph AWS [Nuvem AWS - Cluster Independente]
+        AWS_Server[Nomad Server<br/>Líder Raft]
+        AWS_Client1[Nomad Client 1]
+        AWS_Client2[Nomad Client 2]
+        AWS_Server -->|Agenda Tasks| AWS_Client1
+        AWS_Server -->|Agenda Tasks| AWS_Client2
+    end
+
+    subgraph GCP [Nuvem GCP - Cluster Independente]
+        GCP_Server[Nomad Server<br/>Líder Raft]
+        GCP_Client1[Nomad Client 1]
+        GCP_Server -->|Agenda Tasks| GCP_Client1
+    end
+
+    User -->|Submete 'site.nomad.hcl' <br/> (multiregion)| AWS_Server
+    AWS_Server <-->|Comunicação RPC <br/> Assíncrona| GCP_Server
+
+    style AWS_Server fill:#ff9900,stroke:#333,stroke-width:2px
+    style GCP_Server fill:#4285f4,stroke:#333,stroke-width:2px
+```
+
 **Exercício PoC**: Fale com o Agente para ativar a SKILL `[SKILL: Nomad Federation Builder]` e depois implemente a SKILL `[SKILL: Multi-Region Job Operator]` para observar os servidores das duas nuvens gerenciando cargas descentralizadas.
