@@ -35,6 +35,11 @@ Invoque o Agente:
 
 O Agente criará dois control-planes. Cada um pensa ser o líder de seu próprio domínio, mas ambos estão cientes do outro graças ao RPC.
 
+**Dica Prática:** Você também pode usar o `Makefile` incluído para executar os testes automaticamente:
+```bash
+make test
+```
+
 ## Passo 2: O Deploy Global
 Peça ao Agente:
 > *"Agente, gere um arquivo Job Specification baseado na SKILL Multi-Region Job Operator, rodando 2 containers Nginx. Em seguida, submeta no Nomad."*

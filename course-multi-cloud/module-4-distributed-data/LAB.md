@@ -31,6 +31,11 @@ flowchart TD
 Invoque o Agente de IA:
 > *"Agente, ative a SKILL Global Consensus DB. Use Docker para simular três nós (AWS, GCP e Azure Witness) formando um cluster CockroachDB com localidades isoladas."*
 
+**Dica Prática:** Você também pode usar o `Makefile` incluído para executar os testes automaticamente:
+```bash
+make test
+```
+
 ## Passo 2: Inserção Distribuída
 Uma vez que o cluster suba, conecte no nó da AWS (`localhost:26257`) usando um cliente SQL e insira o dado (o Agente pode gerar o script bash para injetar no container, basta pedir a ele).
 

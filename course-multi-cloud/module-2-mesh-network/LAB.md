@@ -42,6 +42,11 @@ Invoque o Agente de IA com o seguinte prompt:
 
 O Agente subirá os containers e usará o IP interno da rede Docker para simular o túnel WireGuard que conectaria fisicamente as duas instâncias no mundo real.
 
+**Dica Prática:** Você também pode usar o `Makefile` incluído para executar os testes automaticamente:
+```bash
+make test
+```
+
 ## Passo 2: Verificando a Federação
 Acesse o terminal do seu host e execute:
 ```bash

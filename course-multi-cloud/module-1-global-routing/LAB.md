@@ -33,11 +33,16 @@ stateDiagram-v2
 
 ---
 
-## Passo 1: Preparação (Acionando o Agente)
+## Passo 1: Preparação (Acionando o Agente ou Executando Automático)
 Você não precisa escrever o Terraform do zero. Invoque o Agente de IA com o seguinte prompt:
 > *"Agente, ative a SKILL Global Traffic Manager e suba a PoC local de Load Balancers simulados para o Módulo 1."*
 
 O agente vai gerar e aplicar um código (via Docker ou Terraform) que colocará dois Load Balancers nas portas `8081` (Mock AWS) e `8082` (Mock GCP).
+
+**Dica Prática:** Você também pode usar o `Makefile` incluído para executar os testes automaticamente:
+```bash
+make test
+```
 
 ## Passo 2: Verificação do Tráfego "Feliz"
 No seu terminal, rode um loop simples para simular usuários acessando seu sistema:
