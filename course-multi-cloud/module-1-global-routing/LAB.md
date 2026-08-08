@@ -2,6 +2,30 @@
 
 Neste laboratório, você verá como o DNS reage dinamicamente a falhas de infraestrutura, desviando o tráfego de usuários antes mesmo que eles percebam o erro.
 
+## Fluxo da Prova de Conceito (PoC)
+
+```mermaid
+stateDiagram-v2
+    [*] --> BordaDNS: Requisição (curl)
+
+    state BordaDNS {
+        direction LR
+        CheckAWS(Health Check AWS)
+        CheckGCP(Health Check GCP)
+    }
+
+    BordaDNS --> LBMockAWS: Rota Padrão (8081)
+    BordaDNS --> LBMockGCP: Rota Secundária (8082)
+
+    LBMockAWS --> [*]: Resposta AWS
+    LBMockGCP --> [*]: Resposta GCP
+
+    note right of LBMockAWS
+        Passo 3: Iremos "matar" este container.
+        O Health Check da AWS passará para estado FAIL.
+    end note
+```
+
 ## Objetivos
 1. Levantar dois servidores Web independentes simulando AWS e GCP.
 2. Injetar tráfego balanceado entre eles.

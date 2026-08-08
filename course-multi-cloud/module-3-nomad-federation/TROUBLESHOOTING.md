@@ -3,8 +3,34 @@
 Problemas operacionais clássicos na orquestração de cargas multi-região.
 
 ## 1. Timeout na Eleição do Raft (Sem Líder)
+
+```mermaid
+sequenceDiagram
+    participant S1 as Server 1 (AWS)
+    participant S2 as Server 2 (GCP)
+    participant S3 as Server 3 (Azure)
+
+    Note over S1: S1 é o Líder Raft
+    S1->>S2: Heartbeat (Estou vivo!)
+    S1->>S3: Heartbeat (Estou vivo!)
+
+    Note over S1,S2: A Latência da WAN sobe para 500ms
+    S1-xS2: Heartbeat Atrasado (> 50ms limite)
+    S1-xS3: Heartbeat Atrasado
+
+    Note over S2: Timeout atingido!
+    Note over S3: Timeout atingido!
+
+    S2->>S3: Vota em mim para Líder?
+    S3->>S2: Sim!
+    Note over S2: S2 vira Líder
+
+    S1->>S2: Heartbeat atrasado chega
+    Note over S1,S3: Cluster entra em Caos/Split-Brain constante
+```
+
 **Problema**: O comando `nomad server members` mostra os nós, mas o cluster se recusa a aceitar novos Jobs. Os logs gritam `no cluster leader`.
-**Causa**: Latência excessiva, ou partições de rede, em um cluster Nomad único espalhado geograficamente. Se o heartbeat entre os Servers passar de alguns milissegundos, o Raft declara a perda do líder e paralisa tudo.
+**Causa**: Latência excessiva, ou partições de rede, em um cluster Nomad único espalhado geograficamente. Se o heartbeat entre os Servers atrasar devido à latência física (velocidade da luz entre continentes), o Raft declara a perda do líder prematuramente e paralisa tudo em um loop de re-eleição.
 **Solução**: Refaça o design para **Federated Clusters** (Múltiplos clusters autônomos por região). Se você deve ter apenas um cluster esticado (Single Cluster), ajuste os parâmetros de `performance` (ex: `raft_multiplier = 5`) no `server.hcl`, mas saiba que a estabilidade não é garantida sobre a WAN.
 
 ## 2. Erro "No nodes were eligible for evaluation"

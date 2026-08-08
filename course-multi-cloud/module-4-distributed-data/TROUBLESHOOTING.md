@@ -13,6 +13,26 @@ Problemas que farão seu banco multi-cloud NewSQL quebrar na vida real.
 **Solução**: Instale e ative *Chrony* (NTP client de alta precisão) ou utilize soluções de Time Sync da própria cloud (como AWS Time Sync Service) em todas as máquinas e force a tolerância máxima (ex: `--max-offset=500ms`).
 
 ## 3. Alta Latência na Escrita (Write Pinhole)
+
+```mermaid
+sequenceDiagram
+    participant App as Aplicação (AWS)
+    participant CRDB_AWS as DB Node (AWS)
+    participant CRDB_GCP as DB Node (GCP)
+
+    App->>CRDB_AWS: INSERT INTO users...
+    activate CRDB_AWS
+    Note over CRDB_AWS: Tempo: 0ms
+    CRDB_AWS->>CRDB_GCP: Pedido de Replicação (Raft)
+    Note right of CRDB_GCP: Distância Física: 5,000 km
+    Note over CRDB_GCP: Tempo: 60ms
+    CRDB_GCP-->>CRDB_AWS: Confirmação de Recepção (ACK)
+    Note over CRDB_AWS: Tempo: 120ms
+    CRDB_AWS-->>App: OK (Success)
+    deactivate CRDB_AWS
+    Note over App: Usuário esperou 120ms só no banco!
+```
+
 **Problema**: Requisições de SELECT (leitura) são em torno de 1ms, mas todo `INSERT` ou `UPDATE` leva 120ms, tornando a aplicação inviável.
-**Causa**: O seu líder do *Range* de dados está na AWS, mas as réplicas estão no GCP (latência de ~60ms). Para o `INSERT` ser confirmado (Quorum de ida e volta), leva-se o tempo da viagem de rede L3 multiplicada.
-**Solução**: Use recursos como *Regional Tables* (onde dados de clientes do Brasil só moram no Data Center do Brasil) ou configure *Locality* e *Survival Goals* precisos para sacrificar um pouco da sobrevivência à bomba nuclear em favor do ganho de performance.
+**Causa**: O seu líder do *Range* de dados está na AWS, mas as réplicas estão no GCP (latência de ida e volta de ~120ms). Para o `INSERT` ser confirmado, o protocolo exige que o Quorum físico responda.
+**Solução**: Use recursos como *Regional Tables* (onde dados de clientes do Brasil só moram no Data Center do Brasil) ou configure *Locality* e *Survival Goals* precisos para sacrificar um pouco da tolerância à falha global em favor do ganho de performance local.

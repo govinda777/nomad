@@ -2,6 +2,33 @@
 
 Neste laboratório, você verá na prática como garantir que dois serviços possam conversar independentemente de onde estejam hospedados (AWS ou GCP), usando o HashiCorp Consul para aplicar mTLS (criptografia).
 
+## Fluxo da Prova de Conceito (PoC)
+
+```mermaid
+graph TD
+    subgraph Mock AWS (Container 1)
+        ConsulAWS[Consul Primary <br/> dc-aws]
+        AppAWS[Aplicação AWS]
+    end
+
+    subgraph Mock GCP (Container 2)
+        ConsulGCP[Consul Secondary <br/> dc-gcp]
+        AppGCP[Aplicação GCP]
+    end
+
+    Net[Docker Bridge Network <br/> Simulando WAN/WireGuard]
+
+    ConsulAWS <-->|Gossip / RPC| Net
+    ConsulGCP <-->|Gossip / RPC| Net
+
+    AppAWS -.->|Requisição| ConsulAWS
+    ConsulAWS -->|Envelopa c/ mTLS| Net
+    Net -->|Roteamento| ConsulGCP
+    ConsulGCP -.->|Entrega local| AppGCP
+
+    style Net fill:#2b2b2b,stroke:#00ff00,color:#fff
+```
+
 ## Objetivos
 1. Levantar dois servidores Consul representando nuvens diferentes.
 2. Unir (federar) os servidores.

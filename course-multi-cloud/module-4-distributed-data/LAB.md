@@ -2,6 +2,23 @@
 
 Vamos provar que é possível ter consistência forte de banco de dados através da internet pública espalhando um Banco NewSQL (CockroachDB) entre 3 nuvens, utilizando nós do tipo Witness (Árbitros).
 
+## Fluxo do Split-Brain e Curador (Witness)
+
+```mermaid
+flowchart TD
+    Start[Nó AWS Cai] --> RaftDetect{Cluster percebe a queda}
+    RaftDetect --> CheckQuorum{Temos a Maioria?}
+
+    CheckQuorum -->|Sim: GCP + Azure = 2| Promote[Azure Vota no GCP para Novo Líder]
+    CheckQuorum -->|Não: Azure também caiu| Block[Congela o Banco para Proteger Dados]
+
+    Promote --> WriteOK[Novas transações fluem no GCP]
+    Block --> Alert[Alerta de Downtime]
+
+    WriteOK --> AWS_Recovery[AWS Volta à Vida]
+    AWS_Recovery --> Sync[AWS baixa os logs que perdeu do GCP]
+```
+
 ## Objetivos
 1. Criar um Cluster DB entre: AWS, GCP e Azure.
 2. Inserir dados.

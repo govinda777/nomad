@@ -15,6 +15,25 @@ Erros comuns ao tentar unir redes de provedores diferentes via WireGuard e Consu
 2. Importe no Data Center Secundário durante o bootstrap.
 
 ## 3. Sobrecarga no Túnel WireGuard (MTU Mismatch)
+
+```mermaid
+graph LR
+    App[Aplicação <br/> MTU 1500]
+    WG_In[Túnel WireGuard <br/> MTU 1420]
+    Router[Roteador WAN <br/> Max 1500]
+
+    App -->|Envia Pacote 1500b| WG_In
+
+    subgraph Encapsulamento
+        WG_In -->|Adiciona +80b de Header| Overhead(Pacote vira 1580b!)
+    end
+
+    Overhead -->|Tenta enviar p/ WAN| Router
+    Router --x|Fragmentação Falha <br/> Pacote Dropado| Destino[Nó GCP]
+
+    style Overhead fill:#ff3333,color:#fff
+```
+
 **Problema**: Conexões simples (ping, requisições pequenas) passam de uma nuvem para outra. Requisições pesadas (transferência de arquivos grandes, payloads JSON gigantes) caem com *Timeout*.
-**Causa**: O MTU (Maximum Transmission Unit) do WireGuard geralmente é configurado para `1420`. Se a rede física tentar mandar pacotes de `1500` bytes através do túnel, eles serão fragmentados ou derrubados.
+**Causa**: O MTU (Maximum Transmission Unit) do WireGuard geralmente é configurado para `1420`. A aplicação tenta enviar `1500` bytes, o WireGuard adiciona seu cabeçalho criptográfico, e o pacote excede o limite físico das placas de rede, sendo derrubado.
 **Solução**: Configure explicitamente as interfaces de rede (`wg0`) em ambos os lados para um MTU seguro (ex: `1360` ou `1420`) e aplique o *TCP MSS Clamping* usando o `iptables`.

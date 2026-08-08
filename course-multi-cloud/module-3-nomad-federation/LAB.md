@@ -2,6 +2,26 @@
 
 Neste laboratório, nós não usaremos o cluster Raft único devido às exigências de baixa latência explicadas no Módulo. Criaremos dois agrupamentos distintos e os federaremos, observando o rollout da aplicação.
 
+## Fluxo do Laboratório (Auto-Revert)
+
+```mermaid
+stateDiagram-v2
+    [*] --> DeployV2: Operador submete V2
+    DeployV2 --> Fase1_Pendente: AWS e GCP validam recursos
+    Fase1_Pendente --> Fase2_Deploying: Inicia Deploy Paralelo
+
+    state Fase2_Deploying {
+        Deploy_AWS_OK --> AWS_Running: V2 funciona bem
+        Deploy_GCP_Error --> GCP_Failed: V2 falha (Broken Image)
+    }
+
+    GCP_Failed --> Auto_Revert: on_failure = "fail_local"
+    Auto_Revert --> GCP_Running: Restaura V1 apenas no GCP
+
+    AWS_Running --> [*]: AWS fica na V2
+    GCP_Running --> [*]: GCP fica na V1
+```
+
 ## Objetivos
 1. Levantar o painel de controle do Nomad na AWS (Server Raft isolado).
 2. Levantar o painel de controle do Nomad no GCP (Server Raft isolado).

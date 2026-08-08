@@ -2,6 +2,30 @@
 
 Neste laboratório nós não subiremos serviços novos; em vez disso, vamos **quebrar de propósito** a comunicação de rede das instâncias das nuvens (simuladas em PoC) usando ferramentas de manipulação de Kernel do Linux (`tc` e `iptables`).
 
+## O Ciclo da Engenharia do Caos
+
+```mermaid
+stateDiagram-v2
+    [*] --> SistemaEstavel: Operação Normal
+
+    SistemaEstavel --> CaosInjetado: Game Day Iniciado! (tc/iptables)
+
+    state CaosInjetado {
+        NetworkDelay --> HealthCheckFail: Latência excede limites
+        HealthCheckFail --> BordaRedireciona: Route53 corta AWS
+        Blackhole --> SplitBrainRaft: DB perde comunicação
+        SplitBrainRaft --> QuorumElection: GCP/Azure assumem
+    }
+
+    CaosInjetado --> ResilienciaComprovada: Usuário não sofreu erro 500
+    CaosInjetado --> FalhaCatastrofica: Sistema cai (precisa de correção)
+
+    ResilienciaComprovada --> SistemaCurado: Removemos as regras iptables
+    FalhaCatastrofica --> SistemaCurado: Corrige arquitetura + Cura nó
+
+    SistemaCurado --> [*]
+```
+
 ## Objetivos
 1. Observar os sintomas de uma rede inter-cloud sofrendo "Packet Loss" massivo.
 2. Comprovar a resiliência via Timeout de Health Checks e Auto-Reverts do Nomad e DNS.
