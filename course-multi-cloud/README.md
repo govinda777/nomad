@@ -52,3 +52,11 @@ Este curso é **Skill-Based**. Isso significa que existe um `AGENTS.md` na raiz 
 O objetivo **não é** que você gaste 10 horas configurando chaves SSH, mas sim que o Agente suba as PoCs para que você possa focar em arquitetura, testar limites de latência e brincar de "Engenheiro do Caos" derrubando servidores.
 
 Verifique a pasta `/skills` para ver os templates de infraestrutura gerenciados pelo Agente.
+
+---
+
+## 🏛️ Decisões de Arquitetura (ADRs)
+
+Decisões fundamentais sobre desenvolvimento, testes e documentação são documentadas usando registros estruturados. Consulte o índice de decisões em:
+* [Registro de ADRs (Architecture Decision Records)](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/README.md)
+
