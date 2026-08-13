@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 2s
+  evaluation_interval: 2s
+
+scrape_configs:
+  - job_name: 'gtm-edge-dns'
+    static_configs:
+      - targets: ['gtm-edge-dns:80']
+
+  - job_name: 'consul'
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']
+    static_configs:
+      - targets: ['consul-aws:8500', 'consul-gcp:8500']
+
+  - job_name: 'nomad'
+    metrics_path: '/v1/metrics'
+    params:
+      format: ['prometheus']
+    static_configs:
+      - targets: ['nomad-server-aws:4646', 'nomad-server-gcp:4646']
+
+  - job_name: 'cockroachdb'
+    metrics_path: '/_status/vars'
+    static_configs:
+      - targets: ['crdb-aws:8080', 'crdb-gcp:8080', 'crdb-azure-witness:8080']

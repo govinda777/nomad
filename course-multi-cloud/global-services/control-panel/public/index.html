@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Cloud Active-Active Control Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --panel-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary: #8b5cf6;
+            --primary-hover: #a78bfa;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2.2rem;
+            background: linear-gradient(to right, #a78bfa, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        .modules-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .module-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .module-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.1);
+        }
+
+        .module-info h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .module-info p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .module-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            font-family: inherit;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-up {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-up:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-test {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-test:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-down {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+        }
+
+        .btn-down:hover {
+            color: var(--danger);
+        }
+
+        .right-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .console-panel {
+            background: #020617;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 380px;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .console-body {
+            font-family: 'Courier New', Courier, monospace;
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            flex-grow: 1;
+            overflow-y: auto;
+            color: #38bdf8;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .links-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .links-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .link-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            text-decoration: none;
+            color: var(--text);
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .link-card:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Nomad Multi-Cloud Active-Active</h1>
+            <p style="color: var(--text-secondary); margin-top: 4px;">Global Infrastructure Control Panel & Observability Suite</p>
+        </div>
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <span>Docker Engine Connected</span>
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <section class="modules-grid">
+            <div class="module-card" id="mod-1">
+                <div class="module-info">
+                    <h3>Módulo 1: Roteamento Global (GTM)</h3>
+                    <p>Load Balancers AWS/GCP & Failover automatizado com HAProxy</p>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-up" onclick="triggerAction('up', 1)">Up</button>
+                    <button class="btn-test" onclick="triggerAction('test', 1)">Run Test</button>
+                    <button class="btn-down" onclick="triggerAction('down', 1)">Down</button>
+                </div>
+            </div>
+
+            <div class="module-card" id="mod-2">
+                <div class="module-info">
+                    <h3>Módulo 2: Service Mesh Inter-Cloud</h3>
+                    <p>Criptografia mTLS & Federação WAN com Consul</p>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-up" onclick="triggerAction('up', 2)">Up</button>
+                    <button class="btn-test" onclick="triggerAction('test', 2)">Run Test</button>
+                    <button class="btn-down" onclick="triggerAction('down', 2)">Down</button>
+                </div>
+            </div>
+
+            <div class="module-card" id="mod-3">
+                <div class="module-info">
+                    <h3>Módulo 3: Federação Nomad Enterprise</h3>
+                    <p>Clusters independentes unificados via RPC & Multi-Region Jobs</p>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-up" onclick="triggerAction('up', 3)">Up</button>
+                    <button class="btn-test" onclick="triggerAction('test', 3)">Run Test</button>
+                    <button class="btn-down" onclick="triggerAction('down', 3)">Down</button>
+                </div>
+            </div>
+
+            <div class="module-card" id="mod-4">
+                <div class="module-info">
+                    <h3>Módulo 4: Persistência CockroachDB</h3>
+                    <p>Consenso geográfico Raft com AWS, GCP e Azure Witness</p>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-up" onclick="triggerAction('up', 4)">Up</button>
+                    <button class="btn-test" onclick="triggerAction('test', 4)">Run Test</button>
+                    <button class="btn-down" onclick="triggerAction('down', 4)">Down</button>
+                </div>
+            </div>
+
+            <div class="module-card" id="mod-5">
+                <div class="module-info">
+                    <h3>Módulo 5: Engenharia do Caos (Game Day)</h3>
+                    <p>Injeção de latência via 'tc' e partições via 'iptables'</p>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-up" onclick="triggerAction('up', 5)">Up</button>
+                    <button class="btn-test" onclick="triggerAction('test', 5)">Run Test</button>
+                    <button class="btn-down" onclick="triggerAction('down', 5)">Down</button>
+                </div>
+            </div>
+        </section>
+
+        <aside class="right-sidebar">
+            <div class="console-panel">
+                <div class="console-header">
+                    <span>EXECUTION LOGS</span>
+                    <span style="color: var(--primary);">Real-time</span>
+                </div>
+                <div class="console-body" id="console">Welcome to Multi-Cloud Active-Active Course Terminal. Click 'Run Test' or 'Up' on any module to start...</div>
+            </div>
+
+            <div class="links-panel">
+                <h3>Observability Tools</h3>
+                <div class="quick-links">
+                    <a href="http://localhost:9090" target="_blank" class="link-card">Prometheus</a>
+                    <a href="http://localhost:3000" target="_blank" class="link-card">Grafana</a>
+                    <a href="http://localhost:8500" target="_blank" class="link-card">Consul AWS</a>
+                    <a href="http://localhost:4646" target="_blank" class="link-card">Nomad AWS</a>
+                    <a href="http://localhost:8083" target="_blank" class="link-card">CockroachDB</a>
+                    <a href="http://localhost:8080" target="_blank" class="link-card">Edge GTM</a>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        const consoleEl = document.getElementById('console');
+
+        function appendLog(text) {
+            consoleEl.innerText = text;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        async function triggerAction(action, moduleNum) {
+            appendLog(`[Sending Request] Triggering '${action}' on Module ${moduleNum}...`);
+            try {
+                const response = await fetch('/api/action', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action, module: moduleNum })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    appendLog(`[Success] Output:\n${data.stdout}`);
+                } else {
+                    appendLog(`[Error] Output:\n${data.stderr || data.stdout}`);
+                }
+            } catch (err) {
+                appendLog(`[System Error] Failed to contact control panel backend.`);
+            }
+        }
+    </script>
+</body>
+</html>

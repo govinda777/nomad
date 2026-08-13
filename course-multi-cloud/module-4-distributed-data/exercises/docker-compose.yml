@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  crdb-aws:
+    image: cockroachdb/cockroach:v23.1.8
+    container_name: crdb-aws
+    # TODO: Complete the start command with appropriate --locality (cloud=aws,region=us-east-1) and join list
+    command: start --insecure --join=crdb-aws,crdb-gcp,crdb-azure-witness --listen-addr=0.0.0.0:26257 --advertise-addr=crdb-aws
+    ports:
+      - "26257:26257"
+      - "8083:8080"
+    restart: always
+
+  crdb-gcp:
+    image: cockroachdb/cockroach:v23.1.8
+    container_name: crdb-gcp
+    # TODO: Complete the start command with appropriate --locality (cloud=gcp,region=us-east-1) and join list
+    command: start --insecure --join=crdb-aws,crdb-gcp,crdb-azure-witness --listen-addr=0.0.0.0:26257 --advertise-addr=crdb-gcp
+    ports:
+      - "26258:26257"
+      - "8084:8080"
+    restart: always
+
+  crdb-azure-witness:
+    image: cockroachdb/cockroach:v23.1.8
+    container_name: crdb-azure-witness
+    # TODO: Complete the start command with appropriate --locality (cloud=azure,region=us-west-1) and join list
+    command: start --insecure --join=crdb-aws,crdb-gcp,crdb-azure-witness --listen-addr=0.0.0.0:26257 --advertise-addr=crdb-azure-witness
+    ports:
+      - "26259:26257"
+      - "8085:8080"
+    restart: always

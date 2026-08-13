@@ -1,7 +1,12 @@
 # 🚀 Curso: Desenvolvimento e Arquitetura de Aplicações Ativo-Ativo Multi-Cloud
 *(Versão: HashiCorp Nomad Federation & Resiliência Avançada)*
 
+![](./docs/assets/Central_de_Logística_de_Infraestrutura.png)
+
+
 Bem-vindo ao curso definitivo sobre resiliência inter-cloud. Este projeto é estritamente **prático (PoC-driven)** e desenhado para ensinar como construir sistemas que sobrevivem a falhas totais de regiões ou provedores de nuvem inteiros.
+
+
 
 ## 🎯 Objetivo
 Abordar os fundamentos de arquiteturas distribuídas, focando nas limitações do Teorema CAP (latência da luz) e como orquestradores modernos lidam com estado através de múltiplas nuvens.
