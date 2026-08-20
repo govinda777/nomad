@@ -69,8 +69,8 @@ case "${1:-}" in
         log "Simulating desaster: stopping AWS container..."
         docker stop lb-mock-aws > /dev/null
 
-        # Give HAProxy 2 seconds to failover (health checks run every 1s)
-        sleep 2.5
+        # Give HAProxy 4 seconds to failover (health checks run every 1s)
+        sleep 4
 
         log "Testing GTM Edge DNS (8080) after AWS failure..."
         gtm_failover_res=$(curl -s http://localhost:8080)

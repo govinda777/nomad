@@ -15,6 +15,8 @@ Este diretório contém os registros de decisões de arquitetura (ADRs) do proje
 | [0007](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0007-ambiente-sandbox-local-estudante.md) | [Ambiente Sandbox Local para Execução Simplificada de PoCs e Exercícios](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0007-ambiente-sandbox-local-estudante.md) | Aceito | 2026-08-08 |
 | [0008](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0008-painel-controle-global-cenarios-teste.md) | [Painel de Controle Global para Automação de Cenários de Teste e Monitoramento](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0008-painel-controle-global-cenarios-teste.md) | Aceito | 2026-08-08 |
 | [0009](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0009-requisito-global-observabilidade-reutilizavel.md) | [Requisito de Observabilidade Global e Reutilizável com Prometheus e Grafana](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0009-requisito-global-observabilidade-reutilizavel.md) | Aceito | 2026-08-08 |
+| [0010](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0010-sistema-observabilidade-testes-carga-modulo-1.md) | [Sistema de Observabilidade e Testes de Carga para o Módulo 1](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0010-sistema-observabilidade-testes-carga-modulo-1.md) | Aceito | 2026-08-13 |
 
 ---
 *Para criar uma nova ADR, siga o padrão estabelecido na [ADR 0001](file:///Users/govinda/projetos/nomad/course-multi-cloud/docs/adr/0001-padrao-adrs.md).*
+
