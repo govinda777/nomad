@@ -41,6 +41,11 @@ Invoque o Agente de IA:
 
 O agente vai gerar e executar comandos do `tc qdisc` para destruir a performance de rede dentro do ambiente simulado.
 
+**Dica Prática:** Você também pode usar o `Makefile` incluído para executar os testes automaticamente:
+```bash
+make test
+```
+
 ## Passo 2: Cascading Failures
 Observe o que ocorre: as conexões entre o Nomad Server AWS e GCP começarão a engasgar, emitindo alertas de que o RPC está demorando. Os Health Checks começarão a falhar e o banco CockroachDB acusará instabilidade no Raft.
 
