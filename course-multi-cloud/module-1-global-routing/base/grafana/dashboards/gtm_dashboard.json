@@ -1,0 +1,157 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 6,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 4,
+      "title": "🏛️ Nomad Architecture & Topology",
+      "type": "text",
+      "options": {
+        "content": "### 🏛️ Topologia do Cluster Nomad (Módulo 1)\n\nO tráfego de entrada chega pelo **GTM Edge DNS (HAProxy)** e é encaminhado para os endpoints regionais:\n\n*   **Nuvem AWS (Região Primária)**: \n    *   **3x Nomad Servers** (Líderes e controle de estado)\n    *   **2x Nomad Clients** (Executando a aplicação web simulada por `lb-mock-aws`)\n*   **Nuvem GCP (Região Backup)**: \n    *   **3x Nomad Servers** (Controle de estado replicado)\n    *   **2x Nomad Clients** (Executando a aplicação web simulada por `lb-mock-gcp`)\n\n*Nota: Em caso de falha da nuvem primária AWS (Servers ou Clients), a borda desvia o tráfego automaticamente para a infraestrutura do GCP.*",
+        "mode": "markdown"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "id": 1,
+      "title": "AWS Ingress (Nomad App - Primary)",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "editorMode": "code",
+          "expr": "haproxy_server_status{server=\"aws\", state=\"UP\"}",
+          "legendFormat": "Status",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": { "text": "DOWN", "color": "red" },
+                "1": { "text": "UP", "color": "green" }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "id": 2,
+      "title": "GCP Ingress (Nomad App - Backup)",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "editorMode": "code",
+          "expr": "haproxy_server_status{server=\"gcp\", state=\"UP\"}",
+          "legendFormat": "Status",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": { "text": "DOWN", "color": "red" },
+                "1": { "text": "UP", "color": "green" }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 3,
+      "title": "HTTP Requests Rate (RPS)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "sum(rate(haproxy_server_http_responses_total[10s])) by (server)",
+          "legendFormat": "{{server}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth"
+          }
+        }
+      }
+    }
+  ],
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "1s",
+      "5s",
+      "10s"
+    ]
+  },
+  "timezone": "",
+  "title": "Multi-Cloud GTM Edge Routing",
+  "weekStart": ""
+}

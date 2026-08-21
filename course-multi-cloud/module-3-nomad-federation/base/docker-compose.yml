@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  nomad-server-aws:
+    image: hashicorp/nomad:1.6.2
+    container_name: nomad-server-aws
+    command: "agent -config=/nomad/config/nomad-server-aws.hcl"
+    ports:
+      - "4646:4646"
+    volumes:
+      - ./nomad-server-aws.hcl:/nomad/config/nomad-server-aws.hcl
+    restart: always
+
+  nomad-client-aws:
+    image: hashicorp/nomad:1.6.2
+    container_name: nomad-client-aws
+    command: "agent -config=/nomad/config/nomad-client-aws.hcl"
+    privileged: true
+    volumes:
+      - ./nomad-client-aws.hcl:/nomad/config/nomad-client-aws.hcl
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - nomad-server-aws
+    restart: always
+
+  nomad-server-gcp:
+    image: hashicorp/nomad:1.6.2
+    container_name: nomad-server-gcp
+    command: "agent -config=/nomad/config/nomad-server-gcp.hcl"
+    ports:
+      - "4647:4646"
+    volumes:
+      - ./nomad-server-gcp.hcl:/nomad/config/nomad-server-gcp.hcl
+    restart: always
+
+  nomad-client-gcp:
+    image: hashicorp/nomad:1.6.2
+    container_name: nomad-client-gcp
+    command: "agent -config=/nomad/config/nomad-client-gcp.hcl"
+    privileged: true
+    volumes:
+      - ./nomad-client-gcp.hcl:/nomad/config/nomad-client-gcp.hcl
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - nomad-server-gcp
+    restart: always
+
+networks:
+  default:
+    name: multi-cloud-network
+

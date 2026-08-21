@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: always
+
+  control-panel:
+    build: ./control-panel
+    container_name: control-panel
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Users/govinda/projetos/nomad:/Users/govinda/projetos/nomad
+    working_dir: /Users/govinda/projetos/nomad/course-multi-cloud/global-services/control-panel
+    restart: always
+
+networks:
+  default:
+    name: multi-cloud-network

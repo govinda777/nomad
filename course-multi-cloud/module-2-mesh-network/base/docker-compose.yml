@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  consul-aws:
+    image: hashicorp/consul:1.15
+    container_name: consul-aws
+    command: "agent -config-file=/consul/config/consul-aws.json"
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    volumes:
+      - ./consul-aws.json:/consul/config/consul-aws.json
+    restart: always
+
+  consul-gcp:
+    image: hashicorp/consul:1.15
+    container_name: consul-gcp
+    command: "agent -config-file=/consul/config/consul-gcp.json"
+    ports:
+      - "8501:8500"
+    volumes:
+      - ./consul-gcp.json:/consul/config/consul-gcp.json
+    depends_on:
+      - consul-aws
+    restart: always
+
+networks:
+  default:
+    name: multi-cloud-network
+
